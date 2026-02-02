@@ -159,16 +159,19 @@ export default function Dock({
     const height = useSpring(heightRow, spring);
 
     return (
-        <motion.div style={{ height, scrollbarWidth: 'none' }} className="dock-outer">
+        <motion.div
+            style={{ height, scrollbarWidth: 'none' }}
+            className="dock-outer"
+            onMouseMove={({ clientX }) => {
+                isHovered.set(1);
+                mouseX.set(clientX);
+            }}
+            onMouseLeave={() => {
+                isHovered.set(0);
+                mouseX.set(Infinity);
+            }}
+        >
             <motion.div
-                onMouseMove={({ clientX }) => {
-                    isHovered.set(1);
-                    mouseX.set(clientX);
-                }}
-                onMouseLeave={() => {
-                    isHovered.set(0);
-                    mouseX.set(Infinity);
-                }}
                 className={`dock-panel ${className}`}
                 style={{ height: panelHeight }}
                 role="toolbar"
