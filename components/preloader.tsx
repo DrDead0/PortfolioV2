@@ -31,7 +31,8 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
         return () => clearTimeout(timeout);
     }, [index]);
 
-    const initialPath = `M0 0 L${dimension.width} 0 L${dimension.width} ${dimension.height} Q${dimension.width / 2} ${dimension.height + 300} 0 ${dimension.height}  L0 0`;
+    const curveHeight = dimension.width * 0.25; 
+    const initialPath = `M0 0 L${dimension.width} 0 L${dimension.width} ${dimension.height} Q${dimension.width / 2} ${dimension.height + curveHeight} 0 ${dimension.height}  L0 0`;
 
     const curve = {
         initial: {
@@ -39,17 +40,25 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
             transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1] as [number, number, number, number] }
         }
     }
-
+    
+    const slideUp = {
+        initial: { top: 0 },
+        exit: {
+            top: `calc(-100vh - ${curveHeight}px)`,
+            transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] as [number, number, number, number], delay: 0.2 }
+        }
+    }
+   
     return (
-        <motion.div variants={slideUp} initial="initial" exit="exit" className="fixed inset-0 z-50 flex items-center justify-center bg-[#141516]" onAnimationComplete={onComplete}>
+        <motion.div variants={slideUp} initial="initial" exit="exit" className="fixed inset-0 z-[9999] flex items-center justify-center" onAnimationComplete={onComplete}>
             {dimension.width > 0 &&
                 <>
                     <motion.p variants={opacity} initial="initial" animate="enter" className="flex text-white text-5xl font-bold items-center absolute z-10">
                         <span className="block w-3 h-3 bg-white rounded-full mr-3"></span>
                         {words[index]}
                     </motion.p>
-                    <svg className="absolute top-0 w-full h-[calc(100%+300px)] pointer-events-none fill-[#141516]">
-                        <motion.path variants={curve} initial="initial"></motion.path>
+                    <svg className="absolute top-0 w-full pointer-events-none fill-[#141516]" style={{ height: `calc(100% + ${curveHeight}px)` }}>
+                        <motion.path variants={curve} initial="initial" exit="initial"></motion.path>
                     </svg>
                 </>
             }
@@ -60,9 +69,4 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
 const opacity = {
     initial: { opacity: 0 },
     enter: { opacity: 0.75, transition: { duration: 1, delay: 0.2 } },
-}
-
-const slideUp = {
-    initial: { top: 0 },
-    exit: { top: "calc(-100vh - 300px)", transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] as [number, number, number, number], delay: 0.2 } }
 }
